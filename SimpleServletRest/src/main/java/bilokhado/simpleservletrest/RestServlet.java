@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 /**
  * Servlet providing RESTful web service for the 'country' resource
  */
-@WebServlet(urlPatterns = "/country", loadOnStartup = 1)
+@WebServlet(name = "RestServlet", urlPatterns = "/country", loadOnStartup = 1)
 public class RestServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(RestServlet.class);

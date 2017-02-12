@@ -5,7 +5,7 @@ apply plugin: 'war'
 
 war {
     version = '0.1'
-    baseName = 'SimpleServletRest'
+    baseName = 'SimpleServletRest##'
     classifier = 'SNAPSHOT'
 }
 
