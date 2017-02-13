@@ -2,6 +2,7 @@ package bilokhado.simpleservletrest;
 
 import bilokhado.simpleservletrest.dao.CountryDao;
 import bilokhado.simpleservletrest.domain.Country;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -40,19 +41,39 @@ public class RestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<Country> countries = null;
+        try {
+            countries = countryDao.getCountries();
+        } catch (SQLException ex) {
+            throw new ServletException("Error reading country list from the DB", ex);
+        }
         PrintWriter out = resp.getWriter();
+        String accept = req.getHeader("accept");
+        if (accept != null && accept.toLowerCase().contains("json")) {
+            resp.setContentType("application/json; charset=UTF-8");
+            sendCountriesAsJson(countries, out);
+        } else {
+            resp.setContentType("application/xml; charset=UTF-8");
+            sendCountriesAsXml(countries, out);
+        }
+        resp.setCharacterEncoding("UTF-8");
+    }
+
+    private void sendCountriesAsXml(Collection<Country> countries, PrintWriter out)
+                throws IOException {
         try (ByteArrayOutputStream outXmlStream = new ByteArrayOutputStream();
-                XMLEncoder encoder = new XMLEncoder(outXmlStream);){
+             XMLEncoder encoder = new XMLEncoder(outXmlStream);){
             encoder.setExceptionListener(e -> LOG.error("Exception during marshalling object to XML", e));
-            List<Country> countries = countryDao.getCountries();
             Object[] countryArray = countries.toArray();
-            Arrays.sort(countryArray);
             encoder.writeObject(countryArray);
             encoder.flush();
             out.write(outXmlStream.toString("UTF-8"));
-        } catch (SQLException ex) {
-            throw new ServletException("Failed to get country list from the DB", ex);
         }
+    }
+
+    private void sendCountriesAsJson(Collection<Country> countries, PrintWriter out) {
+        Gson gson = new Gson();
+        out.write(gson.toJson(countries));
     }
 
     @Override
