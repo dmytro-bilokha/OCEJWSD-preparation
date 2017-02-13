@@ -40,7 +40,7 @@ INSERT INTO country VALUES ('CCK', 'Cocos (Keeling) Islands');
 INSERT INTO country VALUES ('CHE', 'Switzerland');
 INSERT INTO country VALUES ('CHL', 'Chile');
 INSERT INTO country VALUES ('CHN', 'China');
-INSERT INTO country VALUES ('CIV', 'Côte dIvoire');
+INSERT INTO country VALUES ('CIV', 'Cote dIvoire');
 INSERT INTO country VALUES ('CMR', 'Cameroon');
 INSERT INTO country VALUES ('COD', 'Congo');
 INSERT INTO country VALUES ('COG', 'Congo');
