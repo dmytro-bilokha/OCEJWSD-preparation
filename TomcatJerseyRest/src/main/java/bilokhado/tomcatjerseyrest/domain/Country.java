@@ -1,5 +1,8 @@
 package bilokhado.tomcatjerseyrest.domain;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Objects;
@@ -8,8 +11,11 @@ import java.util.Objects;
  * Class represents the country object
  */
 @XmlRootElement(name = "Country")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Country implements Serializable, Comparable<Country> {
+    @XmlElement(name = "Code")
     private String code;
+    @XmlElement(name = "Name")
     private String name;
 
     public Country() {}

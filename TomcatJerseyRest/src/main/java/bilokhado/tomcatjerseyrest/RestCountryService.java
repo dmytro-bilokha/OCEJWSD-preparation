@@ -1,12 +1,11 @@
 package bilokhado.tomcatjerseyrest;
 
 import bilokhado.tomcatjerseyrest.dao.CountryDao;
-import bilokhado.tomcatjerseyrest.domain.Country;
+import bilokhado.tomcatjerseyrest.domain.CountryList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import javax.ws.rs.GET;
@@ -14,9 +13,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * REST service for the country object
@@ -42,12 +40,12 @@ public class RestCountryService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Country> getCountries() {
+    public Response getCountries() {
         try {
-            return countryDao.getCountries();
+            return Response.ok(new CountryList(countryDao.getCountries())).build();
         } catch (SQLException ex) {
             LOG.error("Failed to get country list from the DB", ex);
-            return Collections.emptyList();
+            return Response.serverError().entity("Failed to get country list from the DB").build();
         }
     }
 
