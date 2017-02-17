@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -73,4 +75,29 @@ public class RestCountryService {
                     .build();
         }
     }
+
+    @Path("{code: [a-zA-Z]{3}}")
+    @POST
+    @Consumes({MediaType.TEXT_PLAIN})
+    public Response addCountry(@PathParam("code") String code, String name) {
+        try {
+            if (countryDao.getCountry(code) != null)
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.TEXT_PLAIN_TYPE)
+                        .entity("Country with code='" + code + "' already exists")
+                        .build();
+            Country country = new Country();
+            country.setCode(code.toUpperCase());
+            country.setName(name);
+            countryDao.persistCountry(country);
+            return Response.ok("Persisted country: " + country, MediaType.TEXT_PLAIN_TYPE).build();
+        } catch (SQLException ex) {
+            LOG.error("Failed to persist country with code='{}' in the DB", code, ex);
+            return Response.serverError()
+                    .type(MediaType.TEXT_PLAIN_TYPE)
+                    .entity("Failed to persist country with code='" + code + "' in the DB")
+                    .build();
+        }
+    }
+
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data access object to retrieve Country records from the DB
+ * Data access object to retrieve/persist Country records
  */
 public class CountryDao {
 
@@ -34,6 +34,13 @@ public class CountryDao {
         return fetchedCountries;
     }
 
+    private Country mapCountry(ResultSet resultSet) throws SQLException {
+        Country country = new Country();
+        country.setCode(resultSet.getString("Code"));
+        country.setName(resultSet.getString("Name"));
+        return country;
+    }
+
     public Country getCountry(String code) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -43,7 +50,7 @@ public class CountryDao {
             connection = dataSource.getConnection();
             statement = connection.prepareStatement(
                      "SELECT Code, Name FROM Country WHERE Code=?");
-             statement.setString(1, code);
+             statement.setString(1, code.toUpperCase());
              resultSet = statement.executeQuery();
              boolean hasResult = resultSet.first();
              if (hasResult)
@@ -56,13 +63,6 @@ public class CountryDao {
         return country;
     }
 
-    private Country mapCountry(ResultSet resultSet) throws SQLException {
-        Country country = new Country();
-        country.setCode(resultSet.getString("Code"));
-        country.setName(resultSet.getString("Name"));
-        return country;
-    }
-
     private void closeIfNotNull(AutoCloseable... resources) {
         for (AutoCloseable resource : resources) {
             try {
@@ -71,6 +71,20 @@ public class CountryDao {
             } catch (Exception ex) {
                 //We are closing, so just ignore exceptions for now
             }
+        }
+    }
+
+    public void persistCountry(Country country) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement("INSERT INTO Country (Code, Name) VALUES (?, ?)");
+            statement.setString(1, country.getCode());
+            statement.setString(2, country.getName());
+            statement.executeUpdate();
+        } finally {
+            closeIfNotNull(statement, connection);
         }
     }
 

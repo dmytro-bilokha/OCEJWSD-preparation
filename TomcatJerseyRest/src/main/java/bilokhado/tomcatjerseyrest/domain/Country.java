@@ -18,7 +18,9 @@ public class Country implements Serializable, Comparable<Country> {
     @XmlElement(name = "Name")
     private String name;
 
-    public Country() {}
+    public Country() {
+        //No-args constructor to make marshaller/unmarsharller happy
+    }
 
     @Override
     public int compareTo(Country o) {
@@ -48,8 +50,10 @@ public class Country implements Serializable, Comparable<Country> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Country country = (Country) o;
         return Objects.equals(code, country.code) &&
                 Objects.equals(name, country.name);
@@ -59,4 +63,14 @@ public class Country implements Serializable, Comparable<Country> {
     public int hashCode() {
         return Objects.hash(code, name);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Country{");
+        sb.append("code='").append(code).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+
 }
