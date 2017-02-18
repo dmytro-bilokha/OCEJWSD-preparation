@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Servlet providing RESTful web service for the 'country' resource
  */
-@WebServlet(name = "RestServlet", urlPatterns = "/country", loadOnStartup = 1)
+@WebServlet(name = "RestServlet", urlPatterns = "/country/*", loadOnStartup = 1)
 public class RestServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(RestServlet.class);
@@ -41,22 +41,28 @@ public class RestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ResponseContentType type = ResponseContentType.getRequestedType(req);
+        type.prepareResponse(resp);
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null)
+            sendAllCountries(resp.getWriter(), type);
+        else
+            sendCountry(pathInfo.substring(1), type, resp);
+    }
+
+    private void sendAllCountries(PrintWriter out, ResponseContentType contentType)
+            throws ServletException, IOException {
         List<Country> countries = null;
         try {
             countries = countryDao.getCountries();
         } catch (SQLException ex) {
+            LOG.error("Error reading country list from the DB", ex);
             throw new ServletException("Error reading country list from the DB", ex);
         }
-        PrintWriter out = resp.getWriter();
-        String accept = req.getHeader("accept");
-        if (accept != null && accept.toLowerCase().contains("json")) {
-            resp.setContentType("application/json; charset=UTF-8");
+        if (contentType == ResponseContentType.JSON)
             sendCountriesAsJson(countries, out);
-        } else {
-            resp.setContentType("application/xml; charset=UTF-8");
+        else
             sendCountriesAsXml(countries, out);
-        }
-        resp.setCharacterEncoding("UTF-8");
     }
 
     private void sendCountriesAsXml(Collection<Country> countries, PrintWriter out)
@@ -74,6 +80,41 @@ public class RestServlet extends HttpServlet {
     private void sendCountriesAsJson(Collection<Country> countries, PrintWriter out) {
         Gson gson = new Gson();
         out.write(gson.toJson(countries));
+    }
+
+    private void sendCountry(String code, ResponseContentType contentType
+            , HttpServletResponse response) throws ServletException, IOException {
+        Country country = null;
+        try {
+            country = countryDao.getCountry(code);
+        } catch (SQLException ex) {
+            LOG.error("Error reading country with code='{}' from the DB", code, ex);
+            throw new ServletException("Error reading country from the DB", ex);
+        }
+        if (country == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Country with code='" + code + "' not found");
+            return;
+        }
+        if (contentType == ResponseContentType.JSON) {
+            sendCountryAsJson(country, response.getWriter());
+        } else {
+            sendCountryAsXml(country, response.getWriter());
+        }
+    }
+
+    private void sendCountryAsXml(Country country, PrintWriter out) throws IOException {
+        try (ByteArrayOutputStream outXmlStream = new ByteArrayOutputStream();
+             XMLEncoder encoder = new XMLEncoder(outXmlStream);) {
+            encoder.setExceptionListener(e -> LOG.error("Exception during marshalling object to XML", e));
+            encoder.writeObject(country);
+            encoder.flush();
+            out.write(outXmlStream.toString("UTF-8"));
+        }
+    }
+
+    private void sendCountryAsJson(Country country, PrintWriter out) {
+        Gson gson = new Gson();
+        out.write(gson.toJson(country));
     }
 
     @Override
@@ -106,4 +147,26 @@ public class RestServlet extends HttpServlet {
         throw new HTTPException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
 
+    private enum ResponseContentType {
+        XML("application/xml; charset=UTF-8"), JSON("application/json; charset=UTF-8");
+
+        private String contentType;
+
+        ResponseContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public static ResponseContentType getRequestedType(HttpServletRequest request) {
+            String accept = request.getHeader("accept");
+            if (accept != null && accept.toLowerCase().contains("json"))
+                return ResponseContentType.JSON;
+            else
+                return ResponseContentType.XML;
+        }
+
+        public void prepareResponse(HttpServletResponse response) {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType(contentType);
+        }
+    }
 }
