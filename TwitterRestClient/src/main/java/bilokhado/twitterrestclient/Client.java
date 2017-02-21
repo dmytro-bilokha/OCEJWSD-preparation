@@ -23,9 +23,10 @@ public class Client {
         String consumerSecret = args[1];
         String accessToken = args[2];
         String tokenSecret = args[3];
-        String endpoint = "http://twitter.com/search";
+        //String endpoint = "http://twitter.com/search";
+        String endpoint = "https://api.twitter.com/1.1/search/tweets.json";
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("q", "place:07d9cd6afd884001");
+        queryParams.put("q", "Java");
         TwitterConnection connection = TwitterConnection.getBuilder()
                 .consumerKey(consumerKey)
                 .consumerSecret(consumerSecret)
