@@ -1,0 +1,55 @@
+//noinspection GroovyAssignabilityCheck
+
+apply plugin: 'java'
+
+version = '0.1'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    itestCompile.extendsFrom testCompile
+    itestRuntime.extendsFrom testRuntime
+}
+
+dependencies {
+    compile 'ch.qos.logback:logback-classic:1.1.7'
+}
+
+sourceSets {
+    itest {
+        java {
+            compileClasspath += main.output //+ test.output
+            runtimeClasspath += main.output // + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+//Task to create Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'Weather forecast REST client',
+        	'Implementation-Version': version,
+        	'Main-Class': 'bilokhado.weatherrestclient.Client'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task itest(type: Test) {
+    description = 'Runs the integration tests'
+    group = 'verification'
+    testClassesDir = sourceSets.itest.output.classesDir
+    classpath = sourceSets.itest.runtimeClasspath
+}
+
+tasks.withType(Test) {
+    reports.html.destination = file("${reporting.baseDir}/${name}")
+}
+
