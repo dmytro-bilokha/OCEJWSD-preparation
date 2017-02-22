@@ -1,8 +1,15 @@
 package bilokhado.weatherrestclient;
 
-import java.io.BufferedReader;
+import bilokhado.weatherrestclient.domain.CurrentWeather;
+import bilokhado.weatherrestclient.domain.webmodel.Current;
+import bilokhado.weatherrestclient.domain.webmodel.WebCurrentWeather;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -13,7 +20,6 @@ import java.net.URLEncoder;
  */
 public class WeatherClient {
 
-    private static final String NEW_LINE = System.lineSeparator();
     private static final String API_BASE = "https://api.apixu.com/v1/";
     private static final String CURRENT_WEATHER = "current";
     private static final String FORMAT_XML = ".xml";
@@ -25,39 +31,20 @@ public class WeatherClient {
         this.apiKey = apiKey;
     }
 
-    public String getCurrentWeather(String location) throws WeatherClientException {
+    public CurrentWeather getCurrentWeather(String location) throws WeatherClientException {
         String url= API_BASE + CURRENT_WEATHER + FORMAT_XML + '?'
                 + "key=" + percentEncode(apiKey)
                 + "&q=" + percentEncode(location);
-        URLConnection  connection;
+        InputStream inputStream = getConnectionInputStream(url);
         try {
-            connection = new URL(url).openConnection();
-        } catch (IOException ex) {
-            throw new WeatherClientException("Unable to connect to the REST service with url='" + url + '\'', ex);
-        }
-        connection.setDoInput(true);
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        } catch (IOException ex) {
-            throw new WeatherClientException("Unable to get input data stream from the url='" + url + '\'', ex);
-        }
-        StringBuilder outputBuilder = new StringBuilder();
-        try {
-            for (String line; (line = reader.readLine()) != null; ) {
-                outputBuilder.append(line);
-                outputBuilder.append(NEW_LINE);
-            }
-        } catch (IOException ex) {
-            throw new WeatherClientException("Unable to read data from the url='" + url + '\'', ex);
+            return parseCurrentWeather(inputStream);
         } finally {
             try {
-                reader.close();
-            } catch (Exception ex) {
-                //Ignore any exception, we are anyway closing
+                inputStream.close();
+            } catch (IOException ex) {
+                //Ignore, because we are closing anyway
             }
         }
-        return outputBuilder.toString();
     }
 
     private String percentEncode(String data) throws WeatherClientException {
@@ -69,6 +56,49 @@ public class WeatherClient {
         } catch (UnsupportedEncodingException ex) {
             throw new WeatherClientException("Unable to URLencode UTF-8 string '" + data + "'", ex);
         }
+    }
+
+    private InputStream getConnectionInputStream(String url) throws WeatherClientException {
+        URLConnection  connection;
+        try {
+            connection = new URL(url).openConnection();
+        } catch (IOException ex) {
+            throw new WeatherClientException("Unable to connect to the REST service with url='" + url + '\'', ex);
+        }
+        connection.setDoInput(true);
+        try {
+            return new BufferedInputStream(connection.getInputStream());
+        } catch (IOException ex) {
+            throw new WeatherClientException("Unable to get input data stream from the url='" + url + '\'', ex);
+        }
+    }
+
+    //TODO: add error handling when query is invalid. In such case web service returns error object
+    //with error code and description. It would be great to catch it and parse. Now it just fails on unmarshalling
+    private CurrentWeather parseCurrentWeather(InputStream inputStream) throws WeatherClientException {
+        WebCurrentWeather webCurrentWeather;
+        try {
+            JAXBContext ctx = JAXBContext.newInstance(WebCurrentWeather.class);
+            Unmarshaller unmarshaller = ctx.createUnmarshaller();
+            webCurrentWeather = (WebCurrentWeather) unmarshaller.unmarshal(inputStream);
+        } catch (JAXBException ex) {
+            throw new WeatherClientException("Failed to parse XML from web service", ex);
+        }
+        Current current = webCurrentWeather.getCurrent();
+        return CurrentWeather.getBuilder()
+                .locationName(webCurrentWeather.getLocation().getName())
+                .countryName(webCurrentWeather.getLocation().getCountry())
+                .temperature(current.getTempC())
+                .humidity(current.getHumidity())
+                .pressure(current.getPressureMillibars())
+                .windSpeed(current.getWindKph())
+                .windDegree(current.getWindDegree())
+                .precipitation(current.getPrecipitationMm())
+                .visibilityDistance(current.getVisibilityKm())
+                .feelsLike(current.getFeelsLikeC())
+                .condition(current.getCondition().getText())
+                .lastUpdatedEpoch(current.getLastUpdatedEpoch())
+                .build();
     }
 
 }
