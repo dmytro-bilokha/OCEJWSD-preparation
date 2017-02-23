@@ -1,0 +1,7 @@
+<Context>
+    <Resource name="jdbc/wsds" auth="Container" type="javax.sql.DataSource"
+              maxActive="50" maxIdle="30" maxWait="10000"
+              username="sa" password=""
+              driverClassName="org.h2.Driver"
+              url="jdbc:h2:mem:wsdbt;DB_CLOSE_DELAY=-1"/>
+</Context>
