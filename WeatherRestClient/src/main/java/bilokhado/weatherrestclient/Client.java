@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main application class to test Twitter's REST API
+ * Main application class to test Weather REST API
  */
 public class Client {
     private static final Logger LOG = LoggerFactory.getLogger(Client.class);
