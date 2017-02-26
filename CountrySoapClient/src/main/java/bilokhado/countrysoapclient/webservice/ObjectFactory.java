@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _CountryNotFoundException_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "CountryNotFoundException");
     private final static QName _GetCountryResponse_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getCountryResponse");
     private final static QName _GetCountries_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getCountries");
     private final static QName _GetCountriesResponse_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getCountriesResponse");
@@ -61,6 +62,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CountryNotFoundException }
+     * 
+     */
+    public CountryNotFoundException createCountryNotFoundException() {
+        return new CountryNotFoundException();
+    }
+
+    /**
      * Create an instance of {@link GetCountryResponse }
      * 
      */
@@ -74,6 +83,15 @@ public class ObjectFactory {
      */
     public Country createCountry() {
         return new Country();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CountryNotFoundException }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://tomcatmetrosoap.bilokhado/", name = "CountryNotFoundException")
+    public JAXBElement<CountryNotFoundException> createCountryNotFoundException(CountryNotFoundException value) {
+        return new JAXBElement<CountryNotFoundException>(_CountryNotFoundException_QNAME, CountryNotFoundException.class, null, value);
     }
 
     /**

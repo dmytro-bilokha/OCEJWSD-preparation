@@ -2,6 +2,7 @@ package bilokhado.tomcatmetrosoap;
 
 import bilokhado.tomcatmetrosoap.dao.CountryDao;
 import bilokhado.tomcatmetrosoap.domain.Country;
+import bilokhado.tomcatmetrosoap.exception.CountryNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,13 +57,15 @@ public class SoapCountryService {
     }
 
     @WebMethod
-    public Country getCountry(String code) {
+    public Country getCountry(String code) throws CountryNotFoundException {
         Country country = null;
         try {
             country = countryDao.getCountry(code);
         } catch (SQLException ex) {
             LOG.error("Failed to get country with code='{}' from the DB", code, ex);
         }
+        if (country == null)
+            throw new CountryNotFoundException(code);
         return country;
     }
 

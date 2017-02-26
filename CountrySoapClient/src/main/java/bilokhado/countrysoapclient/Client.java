@@ -1,9 +1,15 @@
 package bilokhado.countrysoapclient;
 
+import bilokhado.countrysoapclient.webservice.Country;
+import bilokhado.countrysoapclient.webservice.CountryNotFoundException;
+import bilokhado.countrysoapclient.webservice.CountryNotFoundException_Exception;
 import bilokhado.countrysoapclient.webservice.SoapCountryService;
 import bilokhado.countrysoapclient.webservice.SoapCountryServiceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
 
 /**
  * Main application class to test SOAP web service
@@ -11,29 +17,38 @@ import org.slf4j.LoggerFactory;
 public class Client {
     private static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
-    private Client(String endpoint) {
-        SoapCountryServiceService service = new SoapCountryServiceService();
-        SoapCountryService port = service.getSoapCountryServicePort();
-        System.out.println(port.getCountries());
+    private Client() {
+        try {
+            SoapCountryService service = openService();
+            service.getCountries().forEach(country -> System.out.println(country.getCode() + " - " + country.getName()));
+        } catch (WebServiceException ex) {
+            LOG.error("Failed to get data from the web service", ex);
+        }
     }
 
-    private Client(String endpoint, String countryCode) {
-        SoapCountryServiceService service = new SoapCountryServiceService();
-        SoapCountryService port = service.getSoapCountryServicePort();
-        System.out.println(port.getCountry(countryCode));
+    private Client(String countryCode) {
+        try {
+            SoapCountryService service = openService();
+            Country country = service.getCountry(countryCode);
+            System.out.println(country.getCode() + " - " + country.getName());
+        } catch (CountryNotFoundException_Exception ex) {
+            CountryNotFoundException exception = ex.getFaultInfo();
+            LOG.error("Got CountryNotFoundException with message='{}', faultInfo='{}'", exception.getMessage()
+                , exception.getFaultInfo(), ex);
+        } catch (WebServiceException ex) {
+            LOG.error("Failed to get data from the web service for countryCode='{}'", countryCode, ex);
+        }
+    }
+
+    private SoapCountryService openService() {
+            SoapCountryServiceService service = new SoapCountryServiceService();
+            return service.getSoapCountryServicePort();
     }
 
     public static void main(String[] args) {
-        if (args.length != 1 && args.length != 2) {
-            System.out.println("SOAP web service client. Parameters required:");
-            System.out.println(" endpoint_url");
-            System.out.println("Optional parameters:");
-            System.out.println(" country_code");
-            System.exit(-1);
-        }
+        if (args.length == 0)
+            new Client();
         if (args.length == 1)
             new Client(args[0]);
-        if (args.length == 2)
-            new Client(args[0], args[1]);
     }
 }
