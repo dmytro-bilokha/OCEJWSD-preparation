@@ -39,6 +39,7 @@ public class Client {
 
     private SoapCountryService openService() {
             SoapCountryServiceService service = new SoapCountryServiceService();
+            service.setHandlerResolver(new ClientHandlerResolver("lookslikekeyisnotsecure"));
             return service.getSoapCountryServicePort();
     }
 
