@@ -62,14 +62,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CountryNotFoundException }
-     * 
-     */
-    public CountryNotFoundException createCountryNotFoundException() {
-        return new CountryNotFoundException();
-    }
-
-    /**
      * Create an instance of {@link GetCountryResponse }
      * 
      */
@@ -86,12 +78,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CountryNotFoundException }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://tomcatmetrosoap.bilokhado/", name = "CountryNotFoundException")
-    public JAXBElement<CountryNotFoundException> createCountryNotFoundException(CountryNotFoundException value) {
-        return new JAXBElement<CountryNotFoundException>(_CountryNotFoundException_QNAME, CountryNotFoundException.class, null, value);
+    public JAXBElement<String> createCountryNotFoundException(String value) {
+        return new JAXBElement<String>(_CountryNotFoundException_QNAME, String.class, null, value);
     }
 
     /**

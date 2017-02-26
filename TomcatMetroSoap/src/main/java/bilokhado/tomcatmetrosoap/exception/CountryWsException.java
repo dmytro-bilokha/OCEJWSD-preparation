@@ -1,8 +1,11 @@
 package bilokhado.tomcatmetrosoap.exception;
 
+import javax.xml.ws.WebFault;
+
 /**
  * Class represents general web service exception
  */
+@WebFault(name = "CountryWsException")
 public class CountryWsException extends Exception {
 
     private String details;

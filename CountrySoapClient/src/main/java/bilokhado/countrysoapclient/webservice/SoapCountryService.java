@@ -31,19 +31,19 @@ public interface SoapCountryService {
      * @param arg0
      * @return
      *     returns bilokhado.countrysoapclient.webservice.Country
-     * @throws CountryNotFoundException_Exception
+     * @throws CountryNotFoundException
      */
     @WebMethod
     @WebResult(targetNamespace = "")
     @RequestWrapper(localName = "getCountry", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetCountry")
     @ResponseWrapper(localName = "getCountryResponse", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetCountryResponse")
     @Action(input = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getCountryRequest", output = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getCountryResponse", fault = {
-        @FaultAction(className = CountryNotFoundException_Exception.class, value = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getCountry/Fault/CountryNotFoundException")
+        @FaultAction(className = CountryNotFoundException.class, value = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getCountry/Fault/CountryNotFoundException")
     })
     public Country getCountry(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0)
-        throws CountryNotFoundException_Exception
+        throws CountryNotFoundException
     ;
 
     /**
