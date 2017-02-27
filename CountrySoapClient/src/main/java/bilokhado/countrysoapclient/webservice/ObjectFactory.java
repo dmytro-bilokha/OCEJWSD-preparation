@@ -24,11 +24,14 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _GetFileDataResponse_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getFileDataResponse");
     private final static QName _CountryNotFoundException_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "CountryNotFoundException");
     private final static QName _GetCountryResponse_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getCountryResponse");
     private final static QName _GetCountries_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getCountries");
+    private final static QName _GetFileData_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getFileData");
     private final static QName _GetCountriesResponse_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getCountriesResponse");
     private final static QName _GetCountry_QNAME = new QName("http://tomcatmetrosoap.bilokhado/", "getCountry");
+    private final static QName _GetFileDataResponseReturn_QNAME = new QName("", "return");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: bilokhado.countrysoapclient.webservice
@@ -62,6 +65,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetFileData }
+     * 
+     */
+    public GetFileData createGetFileData() {
+        return new GetFileData();
+    }
+
+    /**
+     * Create an instance of {@link GetFileDataResponse }
+     * 
+     */
+    public GetFileDataResponse createGetFileDataResponse() {
+        return new GetFileDataResponse();
+    }
+
+    /**
      * Create an instance of {@link GetCountryResponse }
      * 
      */
@@ -75,6 +94,15 @@ public class ObjectFactory {
      */
     public Country createCountry() {
         return new Country();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetFileDataResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://tomcatmetrosoap.bilokhado/", name = "getFileDataResponse")
+    public JAXBElement<GetFileDataResponse> createGetFileDataResponse(GetFileDataResponse value) {
+        return new JAXBElement<GetFileDataResponse>(_GetFileDataResponse_QNAME, GetFileDataResponse.class, null, value);
     }
 
     /**
@@ -105,6 +133,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetFileData }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://tomcatmetrosoap.bilokhado/", name = "getFileData")
+    public JAXBElement<GetFileData> createGetFileData(GetFileData value) {
+        return new JAXBElement<GetFileData>(_GetFileData_QNAME, GetFileData.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetCountriesResponse }{@code >}}
      * 
      */
@@ -120,6 +157,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://tomcatmetrosoap.bilokhado/", name = "getCountry")
     public JAXBElement<GetCountry> createGetCountry(GetCountry value) {
         return new JAXBElement<GetCountry>(_GetCountry_QNAME, GetCountry.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link byte[]}{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "", name = "return", scope = GetFileDataResponse.class)
+    public JAXBElement<byte[]> createGetFileDataResponseReturn(byte[] value) {
+        return new JAXBElement<byte[]>(_GetFileDataResponseReturn_QNAME, byte[].class, GetFileDataResponse.class, ((byte[]) value));
     }
 
 }

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.MTOMFeature;
 
 /**
  * Main application class to test SOAP web service
@@ -29,6 +30,10 @@ public class Client {
             SoapCountryService service = openService();
             Country country = service.getCountry(countryCode);
             System.out.println(country.getCode() + " - " + country.getName());
+            System.out.println("Binary data: ");
+            for (byte dataElement : service.getFileData()) {
+                System.out.printf("0x%02X ", dataElement);
+            }
         } catch (CountryNotFoundException ex) {
             LOG.error("Got CountryNotFoundException with message='{}', faultInfo='{}'", ex.getMessage()
                 , ex.getFaultInfo(), ex);
@@ -40,7 +45,7 @@ public class Client {
     private SoapCountryService openService() {
             SoapCountryServiceService service = new SoapCountryServiceService();
             service.setHandlerResolver(new ClientHandlerResolver("lookslikekeyisnotsecure"));
-            return service.getSoapCountryServicePort();
+            return service.getSoapCountryServicePort(new MTOMFeature());
     }
 
     public static void main(String[] args) {

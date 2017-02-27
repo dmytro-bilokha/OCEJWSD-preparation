@@ -49,6 +49,18 @@ public interface SoapCountryService {
     /**
      * 
      * @return
+     *     returns byte[]
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getFileData", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetFileData")
+    @ResponseWrapper(localName = "getFileDataResponse", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetFileDataResponse")
+    @Action(input = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getFileDataRequest", output = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getFileDataResponse")
+    public byte[] getFileData();
+
+    /**
+     * 
+     * @return
      *     returns java.util.List<bilokhado.countrysoapclient.webservice.Country>
      */
     @WebMethod
