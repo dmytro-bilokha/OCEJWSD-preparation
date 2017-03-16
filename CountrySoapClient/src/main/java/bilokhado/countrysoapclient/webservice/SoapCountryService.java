@@ -49,18 +49,6 @@ public interface SoapCountryService {
     /**
      * 
      * @return
-     *     returns byte[]
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getFileData", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetFileData")
-    @ResponseWrapper(localName = "getFileDataResponse", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetFileDataResponse")
-    @Action(input = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getFileDataRequest", output = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getFileDataResponse")
-    public byte[] getFileData();
-
-    /**
-     * 
-     * @return
      *     returns java.util.List<bilokhado.countrysoapclient.webservice.Country>
      */
     @WebMethod
@@ -69,5 +57,17 @@ public interface SoapCountryService {
     @ResponseWrapper(localName = "getCountriesResponse", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetCountriesResponse")
     @Action(input = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getCountriesRequest", output = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getCountriesResponse")
     public List<Country> getCountries();
+
+    /**
+     * 
+     * @return
+     *     returns byte[]
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getFileData", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetFileData")
+    @ResponseWrapper(localName = "getFileDataResponse", targetNamespace = "http://tomcatmetrosoap.bilokhado/", className = "bilokhado.countrysoapclient.webservice.GetFileDataResponse")
+    @Action(input = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getFileDataRequest", output = "http://tomcatmetrosoap.bilokhado/SoapCountryService/getFileDataResponse")
+    public byte[] getFileData();
 
 }

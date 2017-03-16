@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * SOAP service for the country object
  */
-@WebService
+@WebService(name = "SoapCountryService", portName = "SoapCountryPort", serviceName = "SoapCountryWs")
 @HandlerChain(file = "/META-INF/handlers.xml")
 @MTOM(threshold = 1024)
 public class SoapCountryService {
