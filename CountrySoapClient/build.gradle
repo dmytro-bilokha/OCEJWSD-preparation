@@ -33,7 +33,7 @@ sourceSets {
 //Task to create Jar with all dependencies
 task fatJar(type: Jar) {
 	manifest {
-        attributes 'Implementation-Title': 'Weather forecast REST client',
+        attributes 'Implementation-Title': 'SOAP client from Java stub',
         	'Implementation-Version': version,
         	'Main-Class': 'bilokhado.countrysoapclient.Client'
     }
